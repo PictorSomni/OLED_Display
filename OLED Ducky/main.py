@@ -9,7 +9,9 @@ from adafruit_display_text import label
 import adafruit_displayio_sh1107
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
-from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
+from keyboard_layout_win_fr import KeyboardLayout
+
+# from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
 import adafruit_ducky
 
 displayio.release_displays()
@@ -38,10 +40,13 @@ display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
 ## Keyboard
 time.sleep(1)
 keyboard = Keyboard(usb_hid.devices)
-keyboard_layout = KeyboardLayoutUS(keyboard)
+# keyboard_layout = KeyboardLayoutUS(keyboard)
+keyboard_layout = KeyboardLayout(keyboard)
+
 
 ## DUCKY
-duck = adafruit_ducky.Ducky("wifi_grabber_limited.txt", keyboard, keyboard_layout)
+duck = adafruit_ducky.Ducky("wifi_grabber.txt", keyboard, keyboard_layout)
+# duck = adafruit_ducky.Ducky("youtube.txt", keyboard, keyboard_layout)
 
 ## SH1107 is vertically oriented 64x128
 WIDTH = 128
@@ -54,11 +59,15 @@ group = displayio.Group()
 display.show(group)
 
 button_bitmap = displayio.Bitmap(5, 5, 1)
+wifi_bitmap = displayio.OnDiskBitmap("/purple.bmp")
+
 color_palette = displayio.Palette(1)
 color_palette[0] = 0xFFFFFF  # White
 
 button_sprite = displayio.TileGrid(button_bitmap, pixel_shader=color_palette, x=0, y=-10)
+wifi_sprite = displayio.TileGrid(wifi_bitmap, pixel_shader=wifi_bitmap.pixel_shader, x=0, y= 130)
 group.append(button_sprite)
+group.append(wifi_sprite)
 
 text = "LE FUTUR"
 text_area = label.Label(terminalio.FONT, text=text, scale=2, color=0xFFFFFF, x=15, y=28)
@@ -79,11 +88,11 @@ while True:
         text_area.x = 28
         text_area.y = 28
         text_area.text = "WiFi"
+        # wifi_sprite.y = -21
 
         result = True
         while result is not False:
             result = duck.loop()
-        result = True
 
     elif button_b.fell:
         button_sprite.y = 28
