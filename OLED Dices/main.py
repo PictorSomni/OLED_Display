@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+#############################################################
+#                          IMPORTS                          #
+#############################################################
 import random
 import time
 import board
@@ -8,9 +12,13 @@ from adafruit_debouncer import Debouncer
 from adafruit_display_text import label
 import adafruit_displayio_sh1107
 
+#############################################################
+#                          CONTENT                          #
+#############################################################
+## CLEARS THE DISPLAY
 displayio.release_displays()
 
-# Set up button pins
+## SETUP BUTTON PINS
 pin_a = digitalio.DigitalInOut(board.D9)
 pin_a.direction = digitalio.Direction.INPUT
 pin_a.pull = digitalio.Pull.UP
@@ -23,21 +31,21 @@ pin_c = digitalio.DigitalInOut(board.D5)
 pin_c.direction = digitalio.Direction.INPUT
 pin_c.pull = digitalio.Pull.UP
 
+## DEBOUNCE BUTTONS
 button_a = Debouncer(pin_a) #9
 button_b = Debouncer(pin_b) #6
 button_c = Debouncer(pin_c) #5
 
-# Use for I2C
+## I2C
 i2c = board.I2C()
 display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
 
-## SH1107 is vertically oriented 64x128
+## SH1107 OLED DISPLAY
 WIDTH = 128
 HEIGHT = 64
 
 display = adafruit_displayio_sh1107.SH1107(display_bus, width=WIDTH, height=HEIGHT)
 
-## Make the display context
 group = displayio.Group()
 display.show(group)
 
@@ -57,7 +65,20 @@ text_area = label.Label(terminalio.FONT, text=text, scale=2, color=0xFFFFFF, x=1
 group.append(text_area)
 time.sleep(1)
 
+# random.seed(0)
+#############################################################
+#                          FUNCTION                         #
+#############################################################
+def button(sprite_y, x, y, text):
+    button_sprite.y = sprite_y
+    text_area.scale = 5
+    text_area.x = x
+    text_area.y = y
+    text_area.text = text
 
+#############################################################
+#                         MAIN LOOP                         #
+#############################################################
 while True:
     # Debounce buttons
     button_a.update()
@@ -66,26 +87,13 @@ while True:
 
     # Check for button presses & set text
     if button_a.fell:
-        button_sprite.y = 8
-        text_area.scale = 5
-        text_area.x = 26
-        text_area.y = 28
-        text_area.text = f"{random.choice(["OUI", "NON"])}"
-        # wifi_sprite.y = -21
+        button(8, 26, 28, f"{random.choice(["OUI", "NON"])}")
 
     elif button_b.fell:
-        button_sprite.y = 28
-        text_area.scale = 5
-        text_area.x = 52
-        text_area.y = 28
-        text_area.text = f"{random.randint(1, 6)}"
+        button(28, 52, 28, f"{random.randint(1, 6)}")
 
     elif button_c.fell:
-        button_sprite.y = 47
-        text_area.scale = 5
-        text_area.x = 26
-        text_area.y = 28
-        text_area.text = f"{random.randint(1, 100):03}"
+        button(47, 26, 28, f"{random.randint(1, 100):03}")
 
     display.show(group)
     
