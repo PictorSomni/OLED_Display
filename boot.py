@@ -55,12 +55,13 @@ group.append(text_area)
 
 ## BOTH BUTTONS PRESSED
 if not pin_b.value and not pin_c.value :
-    storage.disable_usb_drive()
     pixels.fill((255, 0, 0))
     text_area.x = 7
     text_area.text = "-< H@CK >-"
-    time.sleep(0.5)
+    
 else :
+    storage.disable_usb_drive()
     pixels.fill((0, 255, 0))
     text_area.text = "BONJOUR !"
-    time.sleep(0.5)
+
+time.sleep(0.5)
